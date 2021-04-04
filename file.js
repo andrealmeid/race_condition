@@ -139,7 +139,12 @@ function drawTrack(borders)
 	}
 
 	context.stroke();
+
+	context.drawImage(image, 0, 0, image.width, image.height, 100, 0,
+		image.width * 0.1, image.height * 0.1);
+
 	context.restore();
+
 	window.requestAnimationFrame(() => drawTrack(borders));
 }
 

@@ -4,6 +4,7 @@ let context = canvas.getContext("2d");
 var globalX = 0;
 var globalY = 0;
 var globalScale = 1;
+var mouseX = 0, mouseY = 0;
 
 canvas.width = 1280;
 canvas.height = 720;
@@ -90,10 +91,25 @@ function generateBorders(track)
 	return [borderL, borderR];
 }
 
+function clearCanvas()
+{
+	context.setTransform(1, 0, 0, 1, 0, 0);
+	context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
 function drawTrack(borders)
 {
 	let [borderL, borderR] = borders;
-	context.clearRect(0, 0, canvas.width, canvas.height);
+
+	clearCanvas();
+
+	context.save();
+	//context.translate(globalX, globalY);
+	let pt = context.transformedPoint(mouseX, mouseY);
+	context.translate(pt.x, pt.y);
+	context.scale(globalScale, globalScale);
+	context.translate(-pt.x, -pt.y);
+	context.fillRect(0, 0, 10, 10); // eu sou um ponto; bota mais
 
 	context.lineWidth = 5;
 	context.beginPath();
@@ -103,9 +119,10 @@ function drawTrack(borders)
 
 		context.moveTo(borderR[i], borderR[i+1]);
 		context.lineTo(borderR[i+2], borderR[i+3]);
-
 	}
+
 	context.stroke();
+	context.restore();
 	window.requestAnimationFrame(() => drawTrack(borders));
 }
 
@@ -114,27 +131,28 @@ let borders = generateBorders(track);
 drawTrack(borders);
 
 document.onkeypress = function (e) {
-	let speed = 35;
-	let offsetX = 0, offsetY = 0;
+	let speed = 35 * globalScale * 10;
 
 	e = e || window.event;
-	if (e.key === "w")
-		offsetY = speed;
+	if (e.key == "w")
+		globalY += speed;
 	else if (e.key == "s")
-		offsetY = -speed;
+		globalY -= speed;
 	else if (e.key == "a")
-		offsetX = speed;
+		globalX += speed;
 	else if (e.key == "d")
-		offsetX = -speed;
+		globalX -= speed;
 
-	context.translate(offsetX, offsetY);
 };
-
 
 function zoom(event)
 {
-	globalScale -= event.deltaY * 0.01;
-	context.scale(globalScale, globalScale);
+	let bound = canvas.getBoundingClientRect();
+
+	mouseX = (event.clientX - bound.left - canvas.clientLeft);
+	mouseY = (event.clientY - bound.top - canvas.clientTop);
+
+	globalScale -= event.deltaY / 30;
 }
 
 canvas.addEventListener("wheel", zoom);

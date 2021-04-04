@@ -10,6 +10,8 @@ let globalY = 0;
 let globalScale = 1;
 let mouseX = 0, mouseY = 0;
 
+let pressedKeys = {};
+
 canvas.width = 1280;
 canvas.height = 720;
 
@@ -109,6 +111,16 @@ function drawTrack(borders)
 {
 	let [borderL, borderR] = borders;
 
+	const actualSpeed = panSpeedFactor * (1 / globalScale);
+	if (pressedKeys["w"])
+		globalY += actualSpeed
+	if (pressedKeys["s"])
+		globalY -= actualSpeed
+	if (pressedKeys["a"])
+		globalX += actualSpeed
+	if (pressedKeys["d"])
+		globalX -= actualSpeed
+
 	clearCanvas();
 
 	context.save();
@@ -136,18 +148,11 @@ let borders = generateBorders(track);
 drawTrack(borders);
 
 document.onkeypress = function (e) {
-	let speed = panSpeedFactor * (1 / globalScale);
+	pressedKeys[e.key] = true;
+};
 
-	e = e || window.event;
-	if (e.key == "w")
-		globalY += speed;
-	else if (e.key == "s")
-		globalY -= speed;
-	else if (e.key == "a")
-		globalX += speed;
-	else if (e.key == "d")
-		globalX -= speed;
-
+document.onkeyup = function (e) {
+	pressedKeys[e.key] = false;
 };
 
 function zoom(event)

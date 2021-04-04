@@ -105,10 +105,9 @@ function drawTrack(borders)
 
 	context.save();
 	//context.translate(globalX, globalY);
-	let pt = context.transformedPoint(mouseX, mouseY);
-	context.translate(pt.x, pt.y);
+	context.translate(mouseX, mouseY);
 	context.scale(globalScale, globalScale);
-	context.translate(-pt.x, -pt.y);
+	context.translate(-mouseX, -mouseY);
 	context.fillRect(0, 0, 10, 10); // eu sou um ponto; bota mais
 
 	context.lineWidth = 5;

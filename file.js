@@ -1,13 +1,21 @@
 let canvas = document.getElementById("game");
 let context = canvas.getContext("2d");
 
-var globalX = 0;
-var globalY = 0;
-var globalScale = 1;
-var mouseX = 0, mouseY = 0;
+const panSpeedFactor = 10;
+const minZoom = 0.5;
+const maxZoom = 5;
+
+let globalX = 0;
+let globalY = 0;
+let globalScale = 1;
+let mouseX = 0, mouseY = 0;
 
 canvas.width = 1280;
 canvas.height = 720;
+
+function clamp(val, max, min) {
+	return Math.min(Math.max(val,min), max);
+}
 
 let image = new Image();
 image.onload = function() {
@@ -104,10 +112,8 @@ function drawTrack(borders)
 	clearCanvas();
 
 	context.save();
-	//context.translate(globalX, globalY);
-	context.translate(mouseX, mouseY);
 	context.scale(globalScale, globalScale);
-	context.translate(-mouseX, -mouseY);
+	context.translate(globalX, globalY);
 	context.fillRect(0, 0, 10, 10); // eu sou um ponto; bota mais
 
 	context.lineWidth = 5;
@@ -130,7 +136,7 @@ let borders = generateBorders(track);
 drawTrack(borders);
 
 document.onkeypress = function (e) {
-	let speed = 35 * globalScale * 10;
+	let speed = panSpeedFactor * (1 / globalScale);
 
 	e = e || window.event;
 	if (e.key == "w")
@@ -151,7 +157,12 @@ function zoom(event)
 	mouseX = (event.clientX - bound.left - canvas.clientLeft);
 	mouseY = (event.clientY - bound.top - canvas.clientTop);
 
-	globalScale -= event.deltaY / 30;
+	let oldScale = globalScale;
+	globalScale -= event.deltaY * 0.001;
+	globalScale = clamp(globalScale, maxZoom, minZoom);
+
+	globalX -= (mouseX / oldScale) - (mouseX / globalScale);
+	globalY -= (mouseY / oldScale) - (mouseY / globalScale);
 }
 
 canvas.addEventListener("wheel", zoom);

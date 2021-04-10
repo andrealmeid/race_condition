@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html>
-    	<meta charset="utf-8">
-	<head>
-		<title>Race Condition</title>
-		<link rel="stylesheet" href="style.css">
-	</head>
-	<body>
-		<canvas id="game" style="border:1px solid #000000;"></canvas>
-		<script src="fabric.js"></script>
-		<script src="file.js"></script>
-	</body>
+<meta charset="utf-8">
+
+<head>
+  <title>Race Condition</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="text/javascript" src="https://unpkg.com/acorn"></script>
+  <script type="text/javascript" src="https://unpkg.com/paper"></script>
+  <script type="text/paperscript" src="main.js" canvas="mainCanvas"></script>
+</head>
+
+<body>
+  <canvas id="mainCanvas" resize></canvas>
+</body>
+
 </html>

@@ -41,6 +41,8 @@ let car = undefined;
 
 // Car speed must be global, as it is 
 let carSpeed = 0;
+let followCar = true;
+let pressedKeys = {};
 
 let globalStats = {
   min: Number.MAX_SAFE_INTEGER,
@@ -147,6 +149,21 @@ function loadCar() {
 // Mouse pan
 function onMouseDrag(event) {
   view.translate(event.point - event.downPoint);
+  followCar = false;
+}
+
+function onKeyDown(event) {
+  pressedKeys[event.key] = true;
+
+  if (["w", "s", "a", "d"].some(key => pressedKeys[key]))
+    followCar = false;
+
+  if (event.key === "space")
+    followCar = !followCar;
+}
+
+function onKeyUp(event) {
+  pressedKeys[event.key] = false;
 }
 
 // Keyboard pan
@@ -161,25 +178,25 @@ function onFrame(event) {
   const pan = new Point(0, 0);
   const panSpeed = PAN_SPEED_FACTOR * (1 / view.zoom) * delta;
 
-  if (Key.isDown("w"))
+  if (pressedKeys["w"])
     pan.y += panSpeed;
-  if (Key.isDown("s"))
+  if (pressedKeys["s"])
     pan.y -= panSpeed;
-  if (Key.isDown("a"))
+  if (pressedKeys["a"])
     pan.x += panSpeed;
-  if (Key.isDown("d"))
+  if (pressedKeys["d"])
     pan.x -= panSpeed;
 
   view.translate(pan);
 
   // Car control
   if (car) {
-    if (Key.isDown("up"))
+    if (pressedKeys["up"])
       carSpeed += CAR_ACCEL * delta;
     else if (carSpeed > 0)
       carSpeed -= CAR_DE_ACCEL * delta;
 
-    if (Key.isDown("down"))
+    if (pressedKeys["down"])
       carSpeed -= CAR_ACCEL * delta;
     else if (carSpeed < 0)
       carSpeed += CAR_DE_ACCEL * delta;
@@ -188,9 +205,9 @@ function onFrame(event) {
     carSpeed = Math.round(clamp(carSpeed, CAR_MIN_SPEED, maxSpeed));
 
     let carRotation = 0;
-    if (Key.isDown("left"))
+    if (pressedKeys["left"])
       carRotation -= CAR_ANGULAR_SPEED;
-    if (Key.isDown("right"))
+    if (pressedKeys["right"])
       carRotation += CAR_ANGULAR_SPEED;
     carRotation *= carSpeed > 0 ? carSpeed / CAR_MAX_SPEED : -carSpeed / CAR_MIN_SPEED;
 
@@ -198,7 +215,7 @@ function onFrame(event) {
     const carDir = new Point(1, 0).rotate(car.rotation);
     car.translate(carDir * carSpeed * delta);
 
-    if (Key.isDown("space"))
+    if (followCar)
       view.center = car.position;
   }
 

@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"eslint.format.enable": true,
+		"editor.tabSize": 8,
+		"editor.codeActionsOnSave": {
+			"source.fixAll.eslint": true
+		},
+	}
+}

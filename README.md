@@ -39,6 +39,10 @@ They are useful, but every dependency should be justified.
 
 Facilitates writing APIs and managing static resources.
 
+## Database: SQlite
+
+Allows to store the leaderboard.
+
 ## View Engine: ejs
 
 Facilitates to use JS variables in the HTML.
@@ -55,3 +59,10 @@ Create default error objects based on status codes.
 ## Seeded RNG: chance
 
 Allows to set generate random number with a predefined seed.
+
+## Dev dependencies
+
+### Linter and formatter: eslint
+
+Allows for code standardization and linting.
+

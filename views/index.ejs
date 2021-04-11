@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link id="favicon" rel="shortcut icon" href="/images/favicon.ico" />
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+
+    <script type="text/javascript" src="https://unpkg.com/acorn"></script>
+    <script type="text/javascript" src="https://unpkg.com/paper"></script>
+    <script type="text/javascript" src="javascripts/snowstorm.js"></script>
+    <script type="text/paperscript" src="javascripts/main.js" canvas="mainCanvas"></script>  </head>
+  <body>
+    <div style="position:absolute; top:20px;left:20px; display:flex;flex-direction:row; width: calc(100vw - 40px); gap: 10px">
+      <span id="speedometer">
+        <%% speedometer %>
+      </span>
+      <span id="globalStats">
+        <%% globalStats %>
+      </span>
+    </div>
+    <canvas id="mainCanvas" resize></canvas>
+  </body>
+</html>

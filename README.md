@@ -29,3 +29,29 @@ Because simulating an over-the-horizon radar is too complex.
 - leaderboard
 - mais ferraris e deixar bonito em geral
 - código pra dar pull periodicamente do gitlab
+
+
+# Node dependencies
+
+They are useful, but every dependency should be justified.
+
+## APIs and ServerSide configuration: express
+
+Facilitates writing APIs and managing static resources.
+
+## View Engine: ejs
+
+Facilitates to use JS variables in the HTML.
+
+## Logging: morgan
+
+Facilitates logging format configuration.
+
+
+## Error helper: http-errors
+
+Create default error objects based on status codes.
+
+## Seeded RNG: chance
+
+Allows to set generate random number with a predefined seed.

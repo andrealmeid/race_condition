@@ -17,9 +17,10 @@ const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 5;
 
 // Track
-const TRACK_SEGMENT_SCALE = 100;
-const TRACK_CURVE_ANGLES = 15;
-const TRACK_RADIUS = 100;
+const TRACK_LENGTH = 150;
+const TRACK_SEGMENT_SCALE = 150;
+const TRACK_CURVE_ANGLES = 20;
+const TRACK_RADIUS = 75;
 const MIDDLE_TRACK_COLOR = "#F7C856";
 const MIDDLE_TRACK_WIDTH = 5;
 const BORDER_COLOR = "black";
@@ -30,8 +31,9 @@ const CAR_SCALE = 0.05;
 const CAR_ACCEL = 100;
 const CAR_DE_ACCEL = 1.0 * CAR_ACCEL;
 const CAR_ANGULAR_SPEED = 2;
-const CAR_MAX_SPEED = 1000;
+const CAR_MAX_SPEED = 500;
 const CAR_MIN_SPEED = -100;
+const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
 
 let track = undefined;
 let road = undefined;
@@ -66,14 +68,14 @@ function generateTrack() {
 
   let dir = new Point(1, 0);
 
-  for (let i = 1; i < 150; i += 1) {
+  for (let i = 0; i < TRACK_LENGTH; i += 1) {
     let lastPoint = track.lastSegment.point;
     track.add(lastPoint + dir * TRACK_SEGMENT_SCALE);
     const dirAngle = TRACK_CURVE_ANGLES * getRandomIntInclusive(-1, 1);
     dir = dir.rotate(dirAngle);
   }
 
-  track.simplify();
+  track.smooth();
 
   track.strokeColor = MIDDLE_TRACK_COLOR;
   track.strokeWidth = MIDDLE_TRACK_WIDTH;
@@ -116,8 +118,8 @@ function generateRoad(track) {
   leftBorder.add(leftBorderPoint);
   rightBorder.insert(0, rightBorderPoint);
 
-  leftBorder.simplify();
-  rightBorder.simplify();
+  leftBorder.smooth();
+  rightBorder.smooth();
 
   let road = new Path();
   road.join(leftBorder);
@@ -182,7 +184,8 @@ function onFrame(event) {
     else if (carSpeed < 0)
       carSpeed += CAR_DE_ACCEL * delta;
 
-    carSpeed = Math.round(clamp(carSpeed, CAR_MIN_SPEED, CAR_MAX_SPEED));
+    const maxSpeed = road.contains(car?.position) ? CAR_MAX_SPEED : OFFROAD_MAX_SPEED;
+    carSpeed = Math.round(clamp(carSpeed, CAR_MIN_SPEED, maxSpeed));
 
     let carRotation = 0;
     if (Key.isDown("left"))
@@ -194,15 +197,14 @@ function onFrame(event) {
     car.rotate(carRotation);
     const carDir = new Point(1, 0).rotate(car.rotation);
     car.translate(carDir * carSpeed * delta);
+
+    if (Key.isDown("space"))
+      view.center = car.position;
   }
 
   globalStats.min = Math.min(globalStats.min, delta);
   globalStats.max = Math.max(globalStats.max, delta);
   globalStats.avg = globalStats.avg * 0.3 + delta * 0.7;
-
-  if (event.count % 50 === 0) {
-    console.log(road.contains(car?.position))
-  }
 }
 
 CANVAS.addEventListener("wheel", event => {

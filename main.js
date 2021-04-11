@@ -207,9 +207,15 @@ function onFrame(event) {
     // Friction
     if (speedInc === 0 && carSpeed !== 0)
       carSpeed -= Math.sign(carSpeed) * CAR_FRICTION * delta;
+    
+    const isOffroad = !road.contains(car?.position);
+    if (isOffroad && Math.abs(carSpeed) > OFFROAD_MAX_SPEED)
+      carSpeed -= Math.sign(carSpeed) * CAR_BREAK * delta;
+    else {
+      const maxSpeed = isOffroad ? OFFROAD_MAX_SPEED : CAR_MAX_SPEED;
+      carSpeed = Math.round(clamp(carSpeed + speedInc, CAR_MIN_SPEED, maxSpeed));
+    }
 
-    const maxSpeed = road.contains(car?.position) ? CAR_MAX_SPEED : OFFROAD_MAX_SPEED;
-    carSpeed = Math.round(clamp(carSpeed + speedInc, CAR_MIN_SPEED, maxSpeed));
 
     let carRotation = 0;
     if (pressedKeys["left"])

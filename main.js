@@ -31,8 +31,9 @@ const CAR_SCALE = 0.05;
 const CAR_ACCEL = 100;
 const CAR_DE_ACCEL = 1.0 * CAR_ACCEL;
 const CAR_ANGULAR_SPEED = 2;
-const CAR_MAX_SPEED = 1000;
+const CAR_MAX_SPEED = 500;
 const CAR_MIN_SPEED = -100;
+const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
 
 let track = undefined;
 let road = undefined;
@@ -183,7 +184,8 @@ function onFrame(event) {
     else if (carSpeed < 0)
       carSpeed += CAR_DE_ACCEL * delta;
 
-    carSpeed = Math.round(clamp(carSpeed, CAR_MIN_SPEED, CAR_MAX_SPEED));
+    const maxSpeed = road.contains(car?.position) ? CAR_MAX_SPEED : OFFROAD_MAX_SPEED;
+    carSpeed = Math.round(clamp(carSpeed, CAR_MIN_SPEED, maxSpeed));
 
     let carRotation = 0;
     if (Key.isDown("left"))
@@ -203,10 +205,6 @@ function onFrame(event) {
   globalStats.min = Math.min(globalStats.min, delta);
   globalStats.max = Math.max(globalStats.max, delta);
   globalStats.avg = globalStats.avg * 0.3 + delta * 0.7;
-
-  if (event.count % 50 === 0) {
-    console.log(road.contains(car?.position))
-  }
 }
 
 CANVAS.addEventListener("wheel", event => {

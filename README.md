@@ -19,3 +19,13 @@ python3 -m http.server 8000 --bind 127.0.0.1
 - Why?
 
 Because simulating an over-the-horizon radar is too complex.
+
+### TODO:
+
+- API
+- servidor que guarda posições em um "array" de keyframes
+- a corrida terminar e começar
+- modificar pra renderizar a partir dos keyframes
+- leaderboard
+- mais ferraris e deixar bonito em geral
+- código pra dar pull periodicamente do gitlab

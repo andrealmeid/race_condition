@@ -1,36 +1,53 @@
+/**
+ * @external PaperScope
+ * @external View
+ * @external Project
+ * @external Tool
+ * 
+ * @var {PaperScope} paper
+ * @var {View} view
+ * @var {Project} project
+ * @var {Tool} tool
+ */
+
 // Movement
-const panSpeedFactor = 1000;
-const zoomSpeedFactor = 1.2;
-const minZoom = 0.5;
-const maxZoom = 5;
+const PAN_SPEED_FACTOR = 1000;
+const ZOOM_SPEED_FACTOR = 1.2;
+const MIN_ZOOM = 0.5;
+const MAX_ZOOM = 5;
+
 // Track
-const trackSegmentScale = 50;
-const trackCurveAngles = 15;
-const trackRadius = 50;
-const middleTrackColor = "yellow";
-const middleTrackWidth = 5;
-const borderColor = "black";
-const borderWidth = 10;
-let track = undefined;
-let borders = undefined;
+const TRACK_SEGMENT_SCALE = 50;
+const TRACK_CURVE_ANGLES = 15;
+const TRACK_RADIUS = 50;
+const MIDDLE_TRACK_COLOR = "yellow";
+const MIDDLE_TRACK_WIDTH = 5;
+const BORDER_COLOR = "black";
+const BORDER_WIDTH = 10;
+
 // Car
-const carScale = 0.05;
-const carAccel = 100;
-const carDeAccel = 1.0 * carAccel;
-const carAngularSpeed = 2;
-const carMaxSpeed = 1000;
-const carMinSpeed = -100;
-let carSpeed = 0;
+const CAR_SCALE = 0.05;
+const CAR_ACCEL = 100;
+const CAR_DE_ACCEL = 1.0 * CAR_ACCEL;
+const CAR_ANGULAR_SPEED = 2;
+const CAR_MAX_SPEED = 1000;
+const CAR_MIN_SPEED = -100;
+
+let track = undefined;
+let road = undefined;
 let car = undefined;
 
-let stats = {
+// Car speed must be global, as it is 
+let carSpeed = 0;
+
+let globalStats = {
   min: Number.MAX_SAFE_INTEGER,
   max: 0,
   avg: 0,
 }
 
 // Globals
-const canvas = document.getElementById("mainCanvas");
+const CANVAS = document.getElementById("mainCanvas");
 
 // Helpers
 function clamp(value, min, max) {
@@ -38,9 +55,9 @@ function clamp(value, min, max) {
 }
 
 function getRandomIntInclusive(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  const roundedMin = Math.ceil(min);
+  const roundedMax = Math.floor(max);
+  return Math.floor(Math.random() * (roundedMax - roundedMin + 1)) + roundedMin;
 }
 
 function generateTrack() {
@@ -51,20 +68,23 @@ function generateTrack() {
 
   for (let i = 1; i < 150; i += 1) {
     let lastPoint = track.lastSegment.point;
-    track.add(lastPoint + dir * trackSegmentScale);
-    const dirAngle = trackCurveAngles * getRandomIntInclusive(-1, 1);
+    track.add(lastPoint + dir * TRACK_SEGMENT_SCALE);
+    const dirAngle = TRACK_CURVE_ANGLES * getRandomIntInclusive(-1, 1);
     dir = dir.rotate(dirAngle);
   }
 
   track.simplify();
 
-  track.strokeColor = middleTrackColor;
-  track.strokeWidth = middleTrackWidth;
+  track.strokeColor = MIDDLE_TRACK_COLOR;
+  track.strokeWidth = MIDDLE_TRACK_WIDTH;
 
   return track;
 }
 
-function generateBorders(track) {
+/**
+ * Returns the Road path array
+ */
+function generateRoad(track) {
   let leftBorder = new Path();
   let rightBorder = new Path();
 
@@ -75,11 +95,11 @@ function generateBorders(track) {
     let leftDir = curveDir.rotate(-90);
     let rightDir = curveDir.rotate(90);
 
-    let leftBorderPoint = curve.point1 + leftDir * trackRadius;
-    let rightBorderPoint = curve.point1 + rightDir * trackRadius;
+    let leftBorderPoint = curve.point1 + leftDir * TRACK_RADIUS;
+    let rightBorderPoint = curve.point1 + rightDir * TRACK_RADIUS;
 
     leftBorder.add(leftBorderPoint);
-    rightBorder.add(rightBorderPoint);
+    rightBorder.insert(0, rightBorderPoint);
   }
 
   // Add last point
@@ -89,28 +109,31 @@ function generateBorders(track) {
   let leftDir = curveDir.rotate(90);
   let rightDir = curveDir.rotate(-90);
 
-  let leftBorderPoint = track.lastCurve.point2 + leftDir * trackRadius;
-  let rightBorderPoint = track.lastCurve.point2 + rightDir * trackRadius;
+  let leftBorderPoint = track.lastCurve.point2 + leftDir * TRACK_RADIUS;
+  let rightBorderPoint = track.lastCurve.point2 + rightDir * TRACK_RADIUS;
 
   leftBorder.add(leftBorderPoint);
-  rightBorder.add(rightBorderPoint);
+  rightBorder.insert(0, rightBorderPoint);
 
-  leftBorder.strokeColor = borderColor;
-  leftBorder.strokeWidth = borderWidth;
   leftBorder.simplify();
-
-  rightBorder.strokeColor = borderColor;
-  rightBorder.strokeWidth = borderWidth;
   rightBorder.simplify();
 
-  return [leftBorder, rightBorder];
+  let road = new Path();
+  road.join(leftBorder);
+  road.join(rightBorder);
+
+  road.strokeColor = BORDER_COLOR;
+  road.strokeWidth = BORDER_WIDTH;
+  road.closed = true;
+  road.fillColor = "black";
+
+  return road;
 }
 
 function loadCar() {
   let car = new Raster("./assets/car.png");
   car.position = view.center;
-  car.scale(carScale);
-
+  car.scale(CAR_SCALE);
   return car;
 }
 
@@ -121,63 +144,74 @@ function onMouseDrag(event) {
 }
 
 // Keyboard pan
+/**
+ * @param {object} event - PaperJS
+ * @property {number} event.delta - seconds between frames
+ */
 function onFrame(event) {
-  let pan = new Point(0, 0);
-  const actualPanSpeed = panSpeedFactor * (1 / view.zoom) * event.delta;
+  const { delta } = event;
+
+  // Panning
+  const pan = new Point(0, 0);
+  const panSpeed = PAN_SPEED_FACTOR * (1 / view.zoom) * delta;
 
   if (Key.isDown("w"))
-    pan.y += actualPanSpeed
+    pan.y += panSpeed;
   if (Key.isDown("s"))
-    pan.y -= actualPanSpeed
+    pan.y -= panSpeed;
   if (Key.isDown("a"))
-    pan.x += actualPanSpeed
+    pan.x += panSpeed;
   if (Key.isDown("d"))
-    pan.x -= actualPanSpeed
+    pan.x -= panSpeed;
 
   view.translate(pan);
 
   // Car control
-  if (car !== undefined) {
-    let carRotation = 0;
-
+  if (car) {
     if (Key.isDown("up"))
-      carSpeed += carAccel * event.delta;
+      carSpeed += CAR_ACCEL * delta;
     else if (carSpeed > 0)
-      carSpeed -= carDeAccel * event.delta;
-    if (Key.isDown("down"))
-      carSpeed -= carAccel * event.delta;
-    else if (carSpeed < 0)
-      carSpeed += carDeAccel * event.delta;
-    if (Key.isDown("left"))
-      carRotation -= carAngularSpeed;
-    if (Key.isDown("right"))
-      carRotation += carAngularSpeed;
-    carRotation *= carSpeed > 0 ? carSpeed / carMaxSpeed : -carSpeed / carMinSpeed;
+      carSpeed -= CAR_DE_ACCEL * delta;
 
-    carSpeed = Math.round(clamp(carSpeed, carMinSpeed, carMaxSpeed));
+    if (Key.isDown("down"))
+      carSpeed -= CAR_ACCEL * delta;
+    else if (carSpeed < 0)
+      carSpeed += CAR_DE_ACCEL * delta;
+
+    carSpeed = Math.round(clamp(carSpeed, CAR_MIN_SPEED, CAR_MAX_SPEED));
+
+    let carRotation = 0;
+    if (Key.isDown("left"))
+      carRotation -= CAR_ANGULAR_SPEED;
+    if (Key.isDown("right"))
+      carRotation += CAR_ANGULAR_SPEED;
+    carRotation *= carSpeed > 0 ? carSpeed / CAR_MAX_SPEED : -carSpeed / CAR_MIN_SPEED;
 
     car.rotate(carRotation);
     const carDir = new Point(1, 0).rotate(car.rotation);
-    car.translate(carDir * carSpeed * event.delta);
+    car.translate(carDir * carSpeed * delta);
   }
 
-  stats.min = Math.min(stats.min, event.delta);
-  stats.max = Math.max(stats.max, event.delta);
-  stats.avg = stats.avg * 0.3 + event.delta * 0.7;
-  console.log(stats);
+  globalStats.min = Math.min(globalStats.min, delta);
+  globalStats.max = Math.max(globalStats.max, delta);
+  globalStats.avg = globalStats.avg * 0.3 + delta * 0.7;
+
+  if (event.count % 50 === 0) {
+    console.log(road.contains(car?.position))
+  }
 }
 
-canvas.addEventListener("wheel", event => {
-  let mouseProjectPos = view.viewToProject(new Point(event.offsetX, event.offsetY));
+CANVAS.addEventListener("wheel", event => {
+  const mouseProjectPos = view.viewToProject(new Point(event.offsetX, event.offsetY));
 
-  const zoomFactor = event.deltaY < 0 ? zoomSpeedFactor : 1 / zoomSpeedFactor;
+  const zoomFactor = event.deltaY < 0 ? ZOOM_SPEED_FACTOR : 1 / ZOOM_SPEED_FACTOR;
   const afterZoom = zoomFactor * view.zoom;
 
-  if (afterZoom >= minZoom && afterZoom <= maxZoom)
+  if (afterZoom >= MIN_ZOOM && afterZoom <= MAX_ZOOM)
     view.scale(zoomFactor, mouseProjectPos);
 });
 
 // Main code
 track = generateTrack();
-borders = generateBorders(track);
+road = generateRoad(track);
 car = loadCar();

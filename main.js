@@ -31,6 +31,7 @@ const CAR_SCALE = 0.05;
 const CAR_ACCEL = 100;
 const CAR_DE_ACCEL = 1.0 * CAR_ACCEL;
 const CAR_ANGULAR_SPEED = 2;
+const CAR_DISPLAY_SPEED = 180;
 const CAR_MAX_SPEED = 500;
 const CAR_MIN_SPEED = -100;
 const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
@@ -222,6 +223,10 @@ function onFrame(event) {
   globalStats.min = Math.min(globalStats.min, delta);
   globalStats.max = Math.max(globalStats.max, delta);
   globalStats.avg = globalStats.avg * 0.3 + delta * 0.7;
+
+  // Update speedometer
+  displayCarSpeed = Math.round(carSpeed / CAR_MAX_SPEED * CAR_DISPLAY_SPEED);
+  document.getElementById('speedometer').textContent = `Speed: ${displayCarSpeed} km/h`;
 }
 
 CANVAS.addEventListener("wheel", event => {

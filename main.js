@@ -29,7 +29,8 @@ const BORDER_WIDTH = 10;
 // Car
 const CAR_SCALE = 0.05;
 const CAR_ACCEL = 100;
-const CAR_DE_ACCEL = 1.0 * CAR_ACCEL;
+const CAR_BREAK = 7 * CAR_ACCEL;
+const CAR_FRICTION = 1.0 * CAR_ACCEL;
 const CAR_ANGULAR_SPEED = 2;
 const CAR_DISPLAY_SPEED = 180;
 const CAR_MAX_SPEED = 500;
@@ -192,18 +193,23 @@ function onFrame(event) {
 
   // Car control
   if (car) {
-    if (pressedKeys["up"])
-      carSpeed += CAR_ACCEL * delta;
-    else if (carSpeed > 0)
-      carSpeed -= CAR_DE_ACCEL * delta;
+    let speedInc = 0;
 
-    if (pressedKeys["down"])
-      carSpeed -= CAR_ACCEL * delta;
-    else if (carSpeed < 0)
-      carSpeed += CAR_DE_ACCEL * delta;
+    // Accelerate
+    if (pressedKeys["up"])
+      speedInc = CAR_ACCEL * delta;
+
+    // Breaking and reverse gear
+    if (pressedKeys["down"]) {
+      speedInc = -(carSpeed > 0 ? CAR_BREAK : CAR_ACCEL) * delta;
+    }
+
+    // Friction
+    if (speedInc === 0 && carSpeed !== 0)
+      carSpeed -= Math.sign(carSpeed) * CAR_FRICTION * delta;
 
     const maxSpeed = road.contains(car?.position) ? CAR_MAX_SPEED : OFFROAD_MAX_SPEED;
-    carSpeed = Math.round(clamp(carSpeed, CAR_MIN_SPEED, maxSpeed));
+    carSpeed = Math.round(clamp(carSpeed + speedInc, CAR_MIN_SPEED, maxSpeed));
 
     let carRotation = 0;
     if (pressedKeys["left"])

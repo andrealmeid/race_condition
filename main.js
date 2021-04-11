@@ -131,7 +131,7 @@ function generateRoad(track) {
 }
 
 function loadCar() {
-  let car = new Raster("./assets/car.png");
+  let car = new Raster("./assets/car_red.png");
   car.position = view.center;
   car.scale(CAR_SCALE);
   return car;

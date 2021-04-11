@@ -17,9 +17,10 @@ const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 5;
 
 // Track
-const TRACK_SEGMENT_SCALE = 100;
-const TRACK_CURVE_ANGLES = 15;
-const TRACK_RADIUS = 100;
+const TRACK_LENGTH = 150;
+const TRACK_SEGMENT_SCALE = 150;
+const TRACK_CURVE_ANGLES = 20;
+const TRACK_RADIUS = 75;
 const MIDDLE_TRACK_COLOR = "#F7C856";
 const MIDDLE_TRACK_WIDTH = 5;
 const BORDER_COLOR = "black";
@@ -66,14 +67,14 @@ function generateTrack() {
 
   let dir = new Point(1, 0);
 
-  for (let i = 1; i < 150; i += 1) {
+  for (let i = 0; i < TRACK_LENGTH; i += 1) {
     let lastPoint = track.lastSegment.point;
     track.add(lastPoint + dir * TRACK_SEGMENT_SCALE);
     const dirAngle = TRACK_CURVE_ANGLES * getRandomIntInclusive(-1, 1);
     dir = dir.rotate(dirAngle);
   }
 
-  track.simplify();
+  track.smooth();
 
   track.strokeColor = MIDDLE_TRACK_COLOR;
   track.strokeWidth = MIDDLE_TRACK_WIDTH;
@@ -116,8 +117,8 @@ function generateRoad(track) {
   leftBorder.add(leftBorderPoint);
   rightBorder.insert(0, rightBorderPoint);
 
-  leftBorder.simplify();
-  rightBorder.simplify();
+  leftBorder.smooth();
+  rightBorder.smooth();
 
   let road = new Path();
   road.join(leftBorder);
@@ -194,6 +195,9 @@ function onFrame(event) {
     car.rotate(carRotation);
     const carDir = new Point(1, 0).rotate(car.rotation);
     car.translate(carDir * carSpeed * delta);
+
+    if (Key.isDown("space"))
+      view.center = car.position;
   }
 
   globalStats.min = Math.min(globalStats.min, delta);

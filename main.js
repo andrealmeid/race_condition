@@ -17,10 +17,10 @@ const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 5;
 
 // Track
-const TRACK_SEGMENT_SCALE = 50;
+const TRACK_SEGMENT_SCALE = 100;
 const TRACK_CURVE_ANGLES = 15;
-const TRACK_RADIUS = 50;
-const MIDDLE_TRACK_COLOR = "yellow";
+const TRACK_RADIUS = 100;
+const MIDDLE_TRACK_COLOR = "#F7C856";
 const MIDDLE_TRACK_WIDTH = 5;
 const BORDER_COLOR = "black";
 const BORDER_WIDTH = 10;
@@ -77,6 +77,7 @@ function generateTrack() {
 
   track.strokeColor = MIDDLE_TRACK_COLOR;
   track.strokeWidth = MIDDLE_TRACK_WIDTH;
+  track.dashArray = [25, 17];
 
   return track;
 }
@@ -125,7 +126,10 @@ function generateRoad(track) {
   road.strokeColor = BORDER_COLOR;
   road.strokeWidth = BORDER_WIDTH;
   road.closed = true;
-  road.fillColor = "black";
+  road.fillColor = "#ACA8AF";
+
+  // Draw the road bellow the yellow strip
+  road.sendToBack();
 
   return road;
 }

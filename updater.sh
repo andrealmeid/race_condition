@@ -5,9 +5,9 @@ do
 		git reset FETCH_HEAD --hard
 
 		killall nodejs
-		nodejs server.js
+		nodejs server.js &
 	fi
 
 	sleep 15
-done &> log.txt &
+done &> log.txt
 

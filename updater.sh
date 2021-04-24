@@ -1,3 +1,5 @@
+nodejs server.js &
+
 while :
 do
 	git fetch origin

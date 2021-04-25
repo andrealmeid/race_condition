@@ -126,10 +126,16 @@ function onKeyDown(event) {
 
   if (event.key === "space")
     followCar = !followCar;
+
+  if (["up", "down", "left", "right"].includes(event.key))
+    player_car.input[event.key] = true;
 }
 
 function onKeyUp(event) {
   pressedKeys[event.key] = false;
+
+  if (player_car.input[event.key] === true)
+    player_car.input[event.key] = false;
 }
 
 // Keyboard pan
@@ -163,11 +169,12 @@ function onFrame(event) {
     // TODO: use keyframe
     //let keyframe = shared.nextKeyframe();
 
-    shared.gameLogic(pressedKeys, car, road, delta);
+    shared.gameLogic(car.input, car, road, delta);
 
     let intersections = shared.calculateIntersections(car, road);
 
-    shared.driver(intersections, car.speed);
+    let isOffroad = !road.contains(car.position);
+    car.driver(intersections, car.speed, isOffroad, car.input);
 
 
     // rendering
@@ -192,15 +199,13 @@ function onFrame(event) {
     }
     car.raster.bringToFront();
 
-
-
-    if (followCar)
-      view.center = car.position;
-
     // Make this work for multiple cars
     let displayCarSpeed = Math.round(car.speed / CAR_MAX_SPEED * CAR_DISPLAY_SPEED);
     document.getElementById('speedometer').textContent = `Speed: ${displayCarSpeed} km/h`;
   }
+
+  if (followCar)
+    view.center = player_car.position;
 
   globalStats.min = Math.min(globalStats.min, delta);
   globalStats.max = Math.max(globalStats.max, delta);
@@ -221,8 +226,13 @@ CANVAS.addEventListener("wheel", event => {
 let track = generateTrack();
 road = generateRoad(track);
 
-console.log(view.center);
-shared.newCar(cars, view.center, 'assets/car_red.png');
+player_car = shared.newCar(cars, view.center, 'assets/car_red.png');
+
+// dummy AI for testing
+let ai_car = shared.newCar(cars, view.center, 'assets/car_green.png');
+ai_car.driver = function (sensors, speed, isOffroad, input) {
+  input.up = true;
+}
+
+// Maybe remove? maybe reappropriate for loading the cars when the race is starting?
 loadCars(cars);
-
-

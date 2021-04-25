@@ -44,6 +44,7 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
     car.addChild(car.raster);
 
     car.sensors = []
+    car.prettysensors = [];
 
     let arc = 30;
     for (let i = 0; i < 360/arc; i++) {
@@ -56,37 +57,40 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
       car.sensors.push(sensor);
     }
 
-    car.prettysensors = [];
-
     car.speed = 0;
     car.position = pos;
     car.lastPos = pos;
     car.rotation = 0;
     car.lastRotation = 0;
 
+    car.input = {up: false, down: false, left: false, right: false};
+    car.driver = shared.driver;
+
     cars.push(car);
+
+    return car;
   }
 
-  exports.inputAccel = function (keys, car, delta) {
+  exports.inputAccel = function (input, car, delta) {
     let speedInc = 0;
 
     // Accelerate
-    if (keys["up"])
+    if (input["up"])
       speedInc = CAR_ACCEL * delta;
 
     // Breaking and reverse gear
-    if (keys["down"])
+    if (input["down"])
       speedInc = -(car.speed > 0 ? CAR_BREAK : CAR_ACCEL) * delta;
 
     return speedInc;
   }
 
-  exports.inputAngle = function (keys, car) {
+  exports.inputAngle = function (input, car) {
     let rotation = 0;
 
-    if (keys["left"])
+    if (input["left"])
       rotation -= CAR_ANGULAR_SPEED;
-    if (keys["right"])
+    if (input["right"])
       rotation += CAR_ANGULAR_SPEED;
     rotation *= car.speed > 0 ? car.speed / CAR_MAX_SPEED : -car.speed / CAR_MIN_SPEED;
 
@@ -94,8 +98,8 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
   }
 
   // TODO: separate this into a AI version and a player version
-  exports.gameLogic = function (keys, car, road, delta) {
-    let speedInc = shared.inputAccel(keys, car, delta);
+  exports.gameLogic = function (input, car, road, delta) {
+    let speedInc = shared.inputAccel(input, car, delta);
 
     // Friction
     if (speedInc === 0 && car.speed !== 0)
@@ -110,7 +114,7 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
     }
 
     car.lastRotation = car.rotation;
-    car.rotation += shared.inputAngle(keys, car);
+    car.rotation += shared.inputAngle(input, car);
 
     // miguezao, car.rotation n funciona
     let dir = new paper.Point(1,0).rotate(car.raster.rotation);
@@ -156,8 +160,12 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
   */
 
   // This is the default AI, other AIs will overwrite this function.
-  exports.driver = function (sensors, speed) {
-    console.log('speed = ', speed, 'sensors = ', sensors);
+  // Must change the "input" parameter to control the car.
+  // TODO: how far is the car from the start/end of the race
+  // TODO: what place is the car in the race?
+  exports.driver = function (sensors, speed, isOffroad, input) {
+    //console.log('speed = ', speed, 'sensors = ', sensors, 'isOffroad = ', isOffroad);
+    console.log(input);    
   }
 
 }(typeof exports === 'undefined' ? this.shared = {} : exports));

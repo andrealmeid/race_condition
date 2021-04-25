@@ -166,7 +166,7 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
   // TODO: what place is the car in the race?
   exports.driver = function (sensors, speed, isOffroad, input) {
     //console.log('speed = ', speed, 'sensors = ', sensors, 'isOffroad = ', isOffroad);
-    console.log(input);    
+    //console.log(input);    
   }
 
 }(typeof exports === 'undefined' ? this.shared = {} : exports));

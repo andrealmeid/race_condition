@@ -119,6 +119,10 @@ function onMouseDrag(event) {
 }
 
 function onKeyDown(event) {
+  let activeElement = document.activeElement.tagName;
+  if (activeElement == 'BUTTON' || activeElement == 'TEXTAREA')
+    return;
+
   pressedKeys[event.key] = true;
 
   if (["w", "s", "a", "d"].some(key => pressedKeys[key]))
@@ -132,6 +136,10 @@ function onKeyDown(event) {
 }
 
 function onKeyUp(event) {
+  let activeElement = document.activeElement.tagName;
+  if (activeElement == 'BUTTON' || activeElement == 'TEXTAREA')
+    return;
+
   pressedKeys[event.key] = false;
 
   if (player_car.input[event.key] === true)
@@ -231,11 +239,21 @@ road = generateRoad(track);
 
 player_car = shared.newCar(cars, view.center, 'assets/car_red.png', 'Player');
 
-// dummy AI for testing
+// Dummy AI for testing
 let ai_car = shared.newCar(cars, view.center, 'assets/car_green.png', 'AI');
 ai_car.driver = function (sensors, speed, isOffroad, input) {
   input.up = true;
 }
 
+// Button to test AI
+let driverApplyButton = document.getElementById('driver-submit');
+driverApplyButton.onclick = function () {
+  let driverCode = document.getElementById('driver-code').value;
+  console.log(driverCode);
+  console.log(eval('var driver = ' + driverCode));
+  ai_car.driver = driver;
+}
+
 // Maybe remove? maybe reappropriate for loading the cars when the race is starting?
 loadCars(cars);
+

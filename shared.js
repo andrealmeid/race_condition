@@ -119,23 +119,32 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
     car.position = car.position.add(dir.multiply(car.speed).multiply(delta));
   };
 
-  exports.getSensorDistance = function (sensor) {
+  exports.calculateSensors = function (carPos, intersections) {
+    let sensors = [];
+
+    for (let intersection of intersections) {
+      sensors.push(shared.getSensorDistance(intersection));
+    }
+
+    return sensors;
+  }
+
+  exports.getIntersectionDistance = function (car, intersection) {
     let minDist = Infinity;
-    for (let i = 0; i < intersections.length; i++) {
-      let dist = intersections[i].point.subtract(car.position).length;
+    for (let i = 0; i < intersection.length; i++) {
+      let dist = intersection[i].point.subtract(car.position).length;
       minDist = Math.min(minDist, dist);
     }
     return minDist;
   }
 
   // Must be run after gameLogic runs at least once
-  exports.calculateSensors = function (car, road) {
+  exports.calculateIntersections = function (car, road) {
     let intersections = [];
 
     for (let sensor of car.sensors) {
       let tmp = sensor.getIntersections(road);
-      intersections = intersections.concat(tmp);
-      //sensors.push(exports.getSensorDistance(car.sensors[i]));
+      intersections.push(shared.getIntersectionDistance(car, tmp));
     }
 
     return intersections;
@@ -145,5 +154,10 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
   exports.getRaceKeyframes = function () {
   }
   */
+
+  // This is the default AI, other AIs will overwrite this function.
+  exports.driver = function (sensors, speed) {
+    console.log('speed = ', speed, 'sensors = ', sensors);
+  }
 
 }(typeof exports === 'undefined' ? this.shared = {} : exports));

@@ -157,38 +157,42 @@ function onFrame(event) {
 
   // Draw cars from this keyframe
   for (let car of cars) {
+
+    // logic
+
     // TODO: use keyframe
     //let keyframe = shared.nextKeyframe();
 
-    //shared.getAIInput(car, sensors);
-
     shared.gameLogic(pressedKeys, car, road, delta);
 
-    let intersections = shared.calculateSensors(car, road);
-    //console.log(intersections);
+    let intersections = shared.calculateIntersections(car, road);
+
+    shared.driver(intersections, car.speed);
+
+
+    // rendering
 
     for (var i = 0; i < car.prettysensors.length; i++) {
       car.prettysensors[i].remove();
     }
     car.prettysensors = [];
 
-    for (var i = 0; i < intersections.length; i++) {
+    for (let i = 0; i < intersections.length; i++) {
+      if (intersections[i] == Infinity)
+        continue;
+
       let path = new Path();
       path.add(new Point(car.position));
-      path.add(new Point(intersections[i].point));
+      path.add(new Point(car.position + (car.sensors[i].getTangentAt(0) * intersections[i])));
       path.strokeColor = SENSOR_COLOR;
       path.strokeWidth = SENSOR_WIDTH;
+      car.addChild(path);
 
-      car.prettysensors[i] = path;
+      car.prettysensors.push(path);
     }
+    car.raster.bringToFront();
 
 
-
-    /*
-    car.rotate(car.rotation - car.lastRotation);
-    car.dir = new Point(1, 0).rotate(car.rotation);
-    car.translate(car.position - car.lastPos);
-    */
 
     if (followCar)
       view.center = car.position;

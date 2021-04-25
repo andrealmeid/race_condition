@@ -29,3 +29,10 @@ Because simulating an over-the-horizon radar is too complex.
 - leaderboard
 - mais ferraris e deixar bonito em geral
 - código pra dar pull periodicamente do gitlab
+
+### License
+
+Unless otherwise noticed, this project is licensed as [GPL-2.0 License](LICENSE).
+
+Car asset licensed as public domain by
+[qubodup](https://all-free-download.com/free-vector/download/red-racing-car-top-view_117247.html).

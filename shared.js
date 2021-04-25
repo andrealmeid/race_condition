@@ -7,6 +7,9 @@ const MIDDLE_TRACK_COLOR = "#F7C856";
 const MIDDLE_TRACK_WIDTH = 5;
 const BORDER_COLOR = "black";
 const BORDER_WIDTH = 10;
+const SENSOR_LEN = 500;
+const SENSOR_WIDTH = 5;
+const SENSOR_COLOR = "green";
 
 // Car
 const CAR_SCALE = 0.05;
@@ -32,14 +35,29 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
     return Math.floor(Math.random() * (roundedMax - roundedMin + 1)) + roundedMin;
   }
 
-  exports.newCar = function (cars, pos) {
-    let car = {
-      raster: undefined, // used only in frontend as `new Raster(...)`
-      speed: 0,
-      pos: pos,
-      lastPos: pos,
-      rotation: 0,
-    };
+  exports.newCar = function (cars, pos, imgurl) {
+    let car = new paper.Group();
+
+    car.raster = new paper.Raster(imgurl);
+    car.raster.scale(CAR_SCALE);
+    car.pivot = car.raster.position;
+    car.addChild(car.raster);
+
+    let dir = new paper.Point(1,0);
+
+    car.sensorPath = new paper.Path();
+    car.sensorPath.add(new paper.Point(car.position));
+    car.sensorPath.add(new paper.Point(car.position.add(dir.multiply(SENSOR_LEN))));
+    car.addChild(car.sensorPath);
+
+    car.circles = [];
+
+    car.speed = 0;
+    car.position = pos;
+    car.lastPos = pos;
+    car.rotation = 0;
+    car.lastRotation = 0;
+
     cars.push(car);
   }
 
@@ -77,7 +95,7 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
     if (speedInc === 0 && car.speed !== 0)
       car.speed -= Math.sign(car.speed) * CAR_FRICTION * delta;
 
-    const isOffroad = !road.contains(car.pos);
+    const isOffroad = !road.contains(car.position);
     if (isOffroad && Math.abs(car.speed) > OFFROAD_MAX_SPEED) {
       car.speed -= Math.sign(car.speed) * CAR_BREAK * delta;
     } else {
@@ -88,10 +106,25 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
     car.lastRotation = car.rotation;
     car.rotation += shared.inputAngle(keys, car);
 
-    car.dir = new paper.Point(1, 0).rotate(car.rotation);
+    // miguezao, car.rotation n funciona
+    let dir = new paper.Point(1,0).rotate(car.raster.rotation);
 
-    car.lastPos = car.pos;
-    car.pos = car.pos.add(car.dir.multiply(car.speed).multiply(delta));
+    car.lastPos = car.position;
+    car.position = car.position.add(dir.multiply(car.speed).multiply(delta));
+  };
+
+  // Must be run after gameLogic runs at least once
+  exports.calculateSensors = function (car, road) {
+    let intersections = car.sensorPath.getIntersections(road);
+
+    let minDist = Infinity;
+    for (let i = 0; i < intersections.length; i++) {
+      let dist = intersections[i].point.subtract(car.position).length;
+      minDist = Math.min(minDist, dist);
+    }
+    console.log(minDist);
+
+    return intersections;
   };
 
   /* TODO

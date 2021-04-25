@@ -105,10 +105,8 @@ function generateRoad(track) {
 
 function loadCars(cars) {
   for (let car of cars) {
-    // TODO: get image from API instead
-    car.raster = new Raster("./assets/car_red.png");
-    car.raster.position = car.pos;
-    car.raster.scale(CAR_SCALE);
+    car.sensorPath.strokeColor = SENSOR_COLOR;
+    car.sensorPath.strokeWidth = SENSOR_WIDTH;
   }
 }
 
@@ -161,14 +159,35 @@ function onFrame(event) {
     // TODO: use keyframe
     //let keyframe = shared.nextKeyframe();
 
+    //shared.getAIInput(car, sensors);
+
     shared.gameLogic(pressedKeys, car, road, delta);
 
-    car.raster.rotate(car.rotation - car.lastRotation);
-    car.dir = new Point(1, 0).rotate(car.raster.rotation);
-    car.raster.translate(car.pos - car.lastPos);
+    let intersections = shared.calculateSensors(car, road);
+
+    for (var i = 0; i < car.circles.length; i++) {
+      car.circles[i].remove();
+    }
+    car.circles = [];
+
+    for (var i = 0; i < intersections.length; i++) {
+      car.circles.push(new Path.Circle({
+        center: intersections[i].point,
+        radius: 5,
+        fillColor: '#009dec'
+      }));
+    }
+
+
+
+    /*
+    car.rotate(car.rotation - car.lastRotation);
+    car.dir = new Point(1, 0).rotate(car.rotation);
+    car.translate(car.position - car.lastPos);
+    */
 
     if (followCar)
-      view.center = car.pos;
+      view.center = car.position;
 
     // Make this work for multiple cars
     let displayCarSpeed = Math.round(car.speed / CAR_MAX_SPEED * CAR_DISPLAY_SPEED);
@@ -195,7 +214,7 @@ let track = generateTrack();
 road = generateRoad(track);
 
 console.log(view.center);
-shared.newCar(cars, view.center);
+shared.newCar(cars, view.center, 'assets/car_red.png');
 loadCars(cars);
 
 

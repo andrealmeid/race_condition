@@ -234,6 +234,7 @@ CANVAS.addEventListener("wheel", event => {
 });
 
 // Main code
+let starting_position = view.center;
 let track = generateTrack();
 road = generateRoad(track);
 
@@ -248,11 +249,12 @@ ai_car.driver = function (sensors, speed, isOffroad, input) {
 // Button to test AI
 let driverApplyButton = document.getElementById('driver-submit');
 driverApplyButton.onclick = function () {
-  let driverCode = document.getElementById('driver-code').value;
-  console.log(driverCode);
-  console.log(eval('var driver = ' + driverCode));
-  ai_car.driver = driver;
+  window.location.reload();
 }
+let driverCode = document.getElementById('driver-code').value;
+console.log(driverCode);
+console.log(eval('var driver = ' + driverCode));
+ai_car.driver = driver;
 
 // Maybe remove? maybe reappropriate for loading the cars when the race is starting?
 loadCars(cars);

@@ -35,7 +35,7 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
     return Math.floor(Math.random() * (roundedMax - roundedMin + 1)) + roundedMin;
   }
 
-  exports.newCar = function (cars, pos, imgurl) {
+  exports.newCar = function (cars, pos, imgurl, name) {
     let car = new paper.Group();
 
     car.raster = new paper.Raster(imgurl);
@@ -65,6 +65,7 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
 
     car.input = {up: false, down: false, left: false, right: false};
     car.driver = shared.driver;
+    car.name = name;
 
     cars.push(car);
 

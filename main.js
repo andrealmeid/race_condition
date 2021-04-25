@@ -161,6 +161,9 @@ function onFrame(event) {
 
   view.translate(pan);
 
+  // Clear the speedometer
+  document.getElementById('speedometer').textContent = '';
+
   // Draw cars from this keyframe
   for (let car of cars) {
 
@@ -199,9 +202,9 @@ function onFrame(event) {
     }
     car.raster.bringToFront();
 
-    // Make this work for multiple cars
+    // Display car speed
     let displayCarSpeed = Math.round(car.speed / CAR_MAX_SPEED * CAR_DISPLAY_SPEED);
-    document.getElementById('speedometer').textContent = `Speed: ${displayCarSpeed} km/h`;
+    document.getElementById('speedometer').textContent += `${car.name}: ${displayCarSpeed} km/h\r\n`;
   }
 
   if (followCar)
@@ -226,10 +229,10 @@ CANVAS.addEventListener("wheel", event => {
 let track = generateTrack();
 road = generateRoad(track);
 
-player_car = shared.newCar(cars, view.center, 'assets/car_red.png');
+player_car = shared.newCar(cars, view.center, 'assets/car_red.png', 'Player');
 
 // dummy AI for testing
-let ai_car = shared.newCar(cars, view.center, 'assets/car_green.png');
+let ai_car = shared.newCar(cars, view.center, 'assets/car_green.png', 'AI');
 ai_car.driver = function (sensors, speed, isOffroad, input) {
   input.up = true;
 }

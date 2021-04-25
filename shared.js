@@ -43,12 +43,18 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
     car.pivot = car.raster.position;
     car.addChild(car.raster);
 
-    let dir = new paper.Point(1,0);
+    car.sensors = []
 
-    car.sensorPath = new paper.Path();
-    car.sensorPath.add(new paper.Point(car.position));
-    car.sensorPath.add(new paper.Point(car.position.add(dir.multiply(SENSOR_LEN))));
-    car.addChild(car.sensorPath);
+    let arc = 30;
+    for (let i = 0; i < 360/arc; i++) {
+      let dir = new paper.Point(1,0).rotate(arc * i);
+
+      let sensor = new paper.Path();
+      sensor.add(new paper.Point(car.position));
+      sensor.add(new paper.Point(car.position.add(dir.multiply(SENSOR_LEN))));
+      car.addChild(sensor);
+      car.sensors.push(sensor);
+    }
 
     car.circles = [];
 
@@ -113,16 +119,24 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
     car.position = car.position.add(dir.multiply(car.speed).multiply(delta));
   };
 
-  // Must be run after gameLogic runs at least once
-  exports.calculateSensors = function (car, road) {
-    let intersections = car.sensorPath.getIntersections(road);
-
+  exports.getSensorDistance = function (sensor) {
     let minDist = Infinity;
     for (let i = 0; i < intersections.length; i++) {
       let dist = intersections[i].point.subtract(car.position).length;
       minDist = Math.min(minDist, dist);
     }
-    console.log(minDist);
+    return minDist;
+  }
+
+  // Must be run after gameLogic runs at least once
+  exports.calculateSensors = function (car, road) {
+    let intersections = [];
+
+    for (let sensor of car.sensors) {
+      let tmp = sensor.getIntersections(road);
+      intersections = intersections.concat(tmp);
+      //sensors.push(exports.getSensorDistance(car.sensors[i]));
+    }
 
     return intersections;
   };

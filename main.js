@@ -105,8 +105,10 @@ function generateRoad(track) {
 
 function loadCars(cars) {
   for (let car of cars) {
-    car.sensorPath.strokeColor = SENSOR_COLOR;
-    car.sensorPath.strokeWidth = SENSOR_WIDTH;
+    for (let sensor of car.sensors) {
+      sensor.strokeColor = SENSOR_COLOR;
+      sensor.strokeWidth = SENSOR_WIDTH;
+    }
   }
 }
 
@@ -164,6 +166,7 @@ function onFrame(event) {
     shared.gameLogic(pressedKeys, car, road, delta);
 
     let intersections = shared.calculateSensors(car, road);
+    //console.log(intersections);
 
     for (var i = 0; i < car.circles.length; i++) {
       car.circles[i].remove();

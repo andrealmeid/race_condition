@@ -106,8 +106,7 @@ function generateRoad(track) {
 function loadCars(cars) {
   for (let car of cars) {
     for (let sensor of car.sensors) {
-      sensor.strokeColor = SENSOR_COLOR;
-      sensor.strokeWidth = SENSOR_WIDTH;
+      // do nothing yet
     }
   }
 }
@@ -168,17 +167,19 @@ function onFrame(event) {
     let intersections = shared.calculateSensors(car, road);
     //console.log(intersections);
 
-    for (var i = 0; i < car.circles.length; i++) {
-      car.circles[i].remove();
+    for (var i = 0; i < car.prettysensors.length; i++) {
+      car.prettysensors[i].remove();
     }
-    car.circles = [];
+    car.prettysensors = [];
 
     for (var i = 0; i < intersections.length; i++) {
-      car.circles.push(new Path.Circle({
-        center: intersections[i].point,
-        radius: 5,
-        fillColor: '#009dec'
-      }));
+      let path = new Path();
+      path.add(new Point(car.position));
+      path.add(new Point(intersections[i].point));
+      path.strokeColor = SENSOR_COLOR;
+      path.strokeWidth = SENSOR_WIDTH;
+
+      car.prettysensors[i] = path;
     }
 
 

@@ -9,7 +9,7 @@ const BORDER_COLOR = "black";
 const BORDER_WIDTH = 10;
 const SENSOR_LEN = 500;
 const SENSOR_WIDTH = 5;
-const SENSOR_COLOR = "green";
+const SENSOR_COLOR = "lightblue";
 
 // Car
 const CAR_SCALE = 0.05;
@@ -56,7 +56,7 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
       car.sensors.push(sensor);
     }
 
-    car.circles = [];
+    car.prettysensors = [];
 
     car.speed = 0;
     car.position = pos;

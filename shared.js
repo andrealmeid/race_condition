@@ -169,4 +169,15 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
     //console.log(input);    
   }
 
+  exports.restart = function (cars, starting_pos) {
+    for (let car of cars) {
+      car.position = starting_pos;
+      car.speed = 0;
+      car.lastPos = starting_pos;
+      car.raster.rotation = 0;
+      car.rotation = 0;
+      car.lastRotation = 0;
+    }
+  }
+
 }(typeof exports === 'undefined' ? this.shared = {} : exports));

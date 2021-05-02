@@ -238,24 +238,20 @@ let starting_position = view.center;
 let track = generateTrack();
 road = generateRoad(track);
 
-player_car = shared.newCar(cars, view.center, 'assets/car_red.png', 'Player');
+player_car = shared.newCar(cars, starting_position, 'assets/car_red.png', 'Player');
 
 // Dummy AI for testing
-let ai_car = shared.newCar(cars, view.center, 'assets/car_green.png', 'AI');
-ai_car.driver = function (sensors, speed, isOffroad, input) {
-  input.up = true;
-}
+let ai_car = shared.newCar(cars, starting_position, 'assets/car_green.png', 'AI');
+ai_car.driver = shared.driver;
+
+// Maybe remove? maybe reappropriate for loading the cars when the race is starting?
+loadCars(cars);
 
 // Button to test AI
 let driverApplyButton = document.getElementById('driver-submit');
 driverApplyButton.onclick = function () {
-  window.location.reload();
+  eval('var driver = ' + document.getElementById('driver-code').value);
+  ai_car.driver = driver;
+  shared.restart(cars, starting_position);
 }
-let driverCode = document.getElementById('driver-code').value;
-console.log(driverCode);
-console.log(eval('var driver = ' + driverCode));
-ai_car.driver = driver;
-
-// Maybe remove? maybe reappropriate for loading the cars when the race is starting?
-loadCars(cars);
 

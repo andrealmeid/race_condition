@@ -1,4 +1,4 @@
-function(sensors, speed, isOffroad, input)
+let relampagoMarquinhos = function(sensors, speed, isOffroad, input)
 {
 	input.up = true;
 	input.down = false;

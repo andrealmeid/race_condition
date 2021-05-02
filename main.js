@@ -20,11 +20,16 @@ const MAX_ZOOM = 5;
 let road = undefined;
 let pressedKeys = {};
 let cars = [];
-let followCar = true;
 let globalStats = {
   min: Number.MAX_SAFE_INTEGER,
   max: 0,
   avg: 0,
+}
+
+// UI
+let cameraFocus = {
+  followCar: false,
+  focusedCarIdx: -1
 }
 
 const CANVAS = document.getElementById("mainCanvas");
@@ -108,13 +113,17 @@ function loadCars(cars) {
       // do nothing yet
     }
   }
+
+  // Set camera focus
+  cameraFocus.followCar = true;
+  cameraFocus.focusedCarIdx = 0;
 }
 
 // Input handlers
 // Mouse pan
 function onMouseDrag(event) {
   view.translate(event.point - event.downPoint);
-  followCar = false;
+  cameraFocus.followCar = false;
 }
 
 function onKeyDown(event) {
@@ -125,13 +134,19 @@ function onKeyDown(event) {
   pressedKeys[event.key] = true;
 
   if (["w", "s", "a", "d"].some(key => pressedKeys[key]))
-    followCar = false;
+    cameraFocus.followCar = false;
 
   if (event.key === "space")
-    followCar = !followCar;
+    cameraFocus.followCar = !cameraFocus.followCar;
 
   if (["up", "down", "left", "right"].includes(event.key))
     player_car.input[event.key] = true;
+
+  if (event.key === "q")
+    cameraFocus.focusedCarIdx = Math.abs((cameraFocus.focusedCarIdx - 1) % cars.length);
+
+  if (event.key === "e")
+    cameraFocus.focusedCarIdx = (cameraFocus.focusedCarIdx + 1) % cars.length;
 }
 
 function onKeyUp(event) {
@@ -214,8 +229,8 @@ function onFrame(event) {
     document.getElementById('speedometer').textContent += `${car.name}: ${displayCarSpeed} km/h\r\n`;
   }
 
-  if (followCar)
-    view.center = player_car.position;
+  if (cameraFocus.followCar)
+    view.center = cars[cameraFocus.focusedCarIdx].position;
 
   globalStats.min = Math.min(globalStats.min, delta);
   globalStats.max = Math.max(globalStats.max, delta);

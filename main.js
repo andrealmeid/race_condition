@@ -352,5 +352,6 @@ shared.newCar(cars, starting_position, 'assets/car_underground2.png', 'danielVet
 shared.newCar(cars, starting_position, 'assets/car_orange.png', 'deadLock', deadLock);
 shared.newCar(cars, starting_position, 'assets/car_red.png', 'relampagoMarquinhos', relampagoMarquinhos);
 shared.newCar(cars, starting_position, 'assets/car_grey.png', 'wavyBoy', wavyBoy);
+shared.newCar(cars, starting_position, 'assets/car_yellow.png', 'Overshooter', Overshooter);
 
 countdown.number = 3;

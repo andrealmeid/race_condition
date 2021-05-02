@@ -329,3 +329,4 @@ driverApplyButton.onclick = function () {
 shared.newCar(cars, starting_position, 'assets/car_green.png', 'praFrentex', praFrenteX);
 shared.newCar(cars, starting_position, 'assets/car_underground2.png', 'danielVettel', danielVettel);
 shared.newCar(cars, starting_position, 'assets/car_orange.png', 'deadLock', deadLock);
+shared.newCar(cars, starting_position, 'assets/car_red.png', 'relampagoMarquinhos', relampagoMarquinhos);

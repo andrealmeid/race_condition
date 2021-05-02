@@ -326,4 +326,5 @@ driverApplyButton.onclick = function () {
 }
 
 // AIs!! Add yours' here.
-let car = shared.newCar(cars, starting_position, 'assets/car_green.png', 'AI', praFrenteX);
+shared.newCar(cars, starting_position, 'assets/car_green.png', 'AI', praFrenteX);
+shared.newCar(cars, starting_position, 'assets/car_grey.png', 'AI', danielVettel);

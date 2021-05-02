@@ -176,6 +176,22 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
       car.speed = 0;
       car.lastPos = starting_pos;
       car.raster.rotation = 0;
+
+      for (var i = 0; i < car.sensors.length; i++) {
+        car.sensors[i].remove();
+      }
+      car.sensors = [];
+      let arc = 30;
+      for (let i = 0; i < 360/arc; i++) {
+        let dir = new paper.Point(1,0).rotate(arc * i);
+
+        let sensor = new paper.Path();
+        sensor.add(new paper.Point(car.position));
+        sensor.add(new paper.Point(car.position.add(dir.multiply(SENSOR_LEN))));
+        car.addChild(sensor);
+        car.sensors.push(sensor);
+      }
+
       car.rotation = 0;
       car.lastRotation = 0;
       car.input = {up: false, down: false, left: false, right: false};

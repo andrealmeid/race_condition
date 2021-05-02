@@ -351,5 +351,6 @@ shared.newCar(cars, starting_position, 'assets/car_green.png', 'praFrentex', pra
 shared.newCar(cars, starting_position, 'assets/car_underground2.png', 'danielVettel', danielVettel);
 shared.newCar(cars, starting_position, 'assets/car_orange.png', 'deadLock', deadLock);
 shared.newCar(cars, starting_position, 'assets/car_red.png', 'relampagoMarquinhos', relampagoMarquinhos);
+shared.newCar(cars, starting_position, 'assets/car_grey.png', 'wavyBoy', wavyBoy);
 
 countdown.number = 3;

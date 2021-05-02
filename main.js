@@ -20,6 +20,7 @@ const MAX_ZOOM = 5;
 let road = undefined;
 let pressedKeys = {};
 let cars = [];
+let displaySensors = false;
 let globalStats = {
   min: Number.MAX_SAFE_INTEGER,
   max: 0,
@@ -147,6 +148,9 @@ function onKeyDown(event) {
 
   if (event.key === "e")
     cameraFocus.focusedCarIdx = (cameraFocus.focusedCarIdx + 1) % cars.length;
+
+  if (event.key === "1")
+    displaySensors = !displaySensors;
 }
 
 function onKeyUp(event) {
@@ -209,18 +213,20 @@ function onFrame(event) {
     }
     car.prettysensors = [];
 
-    for (let i = 0; i < intersections.length; i++) {
-      if (intersections[i] == Infinity)
-        continue;
+    if (displaySensors) {
+      for (let i = 0; i < intersections.length; i++) {
+        if (intersections[i] == Infinity)
+          continue;
 
-      let path = new Path();
-      path.add(new Point(car.position));
-      path.add(new Point(car.position + (car.sensors[i].getTangentAt(0) * intersections[i])));
-      path.strokeColor = SENSOR_COLOR;
-      path.strokeWidth = SENSOR_WIDTH;
-      car.addChild(path);
+        let path = new Path();
+        path.add(new Point(car.position));
+        path.add(new Point(car.position + (car.sensors[i].getTangentAt(0) * intersections[i])));
+        path.strokeColor = SENSOR_COLOR;
+        path.strokeWidth = SENSOR_WIDTH;
+        car.addChild(path);
 
-      car.prettysensors.push(path);
+        car.prettysensors.push(path);
+      }
     }
     car.raster.bringToFront();
 

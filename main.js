@@ -261,3 +261,5 @@ driverApplyButton.onclick = function () {
   shared.restart(cars, starting_position);
 }
 
+// AIs!! Add yours' here.
+let car = shared.newCar(cars, starting_position, 'assets/car_green.png', 'AI', praFrenteX);

@@ -240,7 +240,7 @@ road = generateRoad(track);
 player_car = shared.newCar(cars, starting_position, 'assets/car_red.png', 'Player');
 
 // Dummy AI for testing
-let ai_car = shared.newCar(cars, starting_position, 'assets/car_green.png', 'AI');
+let ai_car = shared.newCar(cars, starting_position, 'assets/car_blue.png', 'AI');
 ai_car.driver = shared.driver;
 
 // Maybe remove? maybe reappropriate for loading the cars when the race is starting?

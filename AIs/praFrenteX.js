@@ -12,11 +12,11 @@ let praFrenteX = function (sensors, speed, isOffroad, input) {
     input.right = tmp;
   }
 
-  let left_sensors = sensors[10] + sensors[9] + sensors[8];
+  let left_sensors = sensors[11] + sensors[10] + sensors[9];
   let right_sensors = sensors[1] + sensors[2] + sensors[3];
 
-  if (right_sensors < left_sensors) input.left = true;
-  if (right_sensors > left_sensors) input.right = true;
+  if ((sensors[0] < 500 && right_sensors < left_sensors) || right_sensors * 1.3 < left_sensors) input.left = true;
+  if ((sensors[0] < 500 && right_sensors > left_sensors) || right_sensors > left_sensors * 1.3) input.right = true;
   if (isOffroad) swapSides(input);
 }
 

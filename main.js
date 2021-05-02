@@ -144,10 +144,10 @@ function onKeyDown(event) {
     player_car.input[event.key] = true;
 
   if (event.key === "q")
-    cameraFocus.focusedCarIdx = Math.abs((cameraFocus.focusedCarIdx - 1) % cars.length);
+    cameraFocus.focusedCarIdx = (cameraFocus.focusedCarIdx + cars.length - 1) % cars.length;
 
   if (event.key === "e")
-    cameraFocus.focusedCarIdx = (cameraFocus.focusedCarIdx + 1) % cars.length;
+    cameraFocus.focusedCarIdx = (cameraFocus.focusedCarIdx + cars.length + 1) % cars.length;
 
   if (event.key === "1")
     displaySensors = !displaySensors;

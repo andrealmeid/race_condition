@@ -178,6 +178,7 @@ const OFFROAD_MAX_SPEED = 0.25 * CAR_MAX_SPEED;
       car.raster.rotation = 0;
       car.rotation = 0;
       car.lastRotation = 0;
+      car.input = {up: false, down: false, left: false, right: false};
     }
   }
 

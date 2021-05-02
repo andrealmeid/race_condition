@@ -249,7 +249,16 @@ loadCars(cars);
 // Button to test AI
 let driverApplyButton = document.getElementById('driver-submit');
 driverApplyButton.onclick = function () {
-  eval('var driver = ' + document.getElementById('driver-code').value);
+  let driver = shared.driver;
+  try {
+    let func = Function('return (' + document.getElementById('driver-code').value + ')')();
+    console.log(func);
+    func(ai_car.sensors, ai_car.speed, false, ai_car.input);
+    driver = func;
+  } catch (e) {
+    console.log("BBB");
+  }
+  //eval('try { driver = ' + func + ' } catch (e) { console.log(e); }');
   ai_car.driver = driver;
   shared.restart(cars, starting_position);
 }

@@ -54,6 +54,43 @@ function generateTrack() {
 }
 
 /**
+ * Create some ex-POTUS around the track
+ */
+function generateBush(curves) {
+  var bushPath = "M 25.700491,0.37527836 C 21.28065,4.7951193 18.634066,16.579174 17.17388,25.893615 13.619575,17.681787 8.7938281,7.7803073 4.5979045,3.5843833 c 0,0 5.0757971,13.0758057 7.7617995,23.2419917 C 8.5088356,22.786986 4.0786166,18.78873 0.10618925,16.818201 L 10.209448,38.653043 c 0,0 3.491512,-0.01613 7.014558,-0.03359 2.121836,-9e-5 4.072625,-0.01621 4.638995,-0.02119 2.327267,0.0092 11.373321,-0.135203 10.848801,-0.139343 -0.520519,-1.601685 9.898252,-17.067873 9.898252,-17.067873 -5.022093,1.967818 -10.765036,6.490417 -15.154114,10.407118 2.298732,-8.182758 8.546248,-20.89795 8.546248,-20.89795 -4.325376,3.41662 -9.329356,11.630999 -12.909806,18.226278 0.07187,-11.290329 2.608109,-28.75121464 2.608109,-28.75121464 z";
+  let bush = new Path(bushPath);
+  bush.scale(0.5);
+  bush.fillColor = '#2D5016';
+
+  for (let curve of curves) {
+    let chance = shared.getRandomIntInclusive(0, 2);
+    let startPoint = curve.point1;
+    let endPoint = curve.point2;
+
+    let curveDir = curve.point2 - curve.point1;
+    curveDir = curveDir.normalize();
+
+    let leftDir = curveDir.rotate(-90);
+    let rightDir = curveDir.rotate(90);
+    let newBush = bush.clone();
+
+    if (chance > 0) {
+      let dist = 2 + shared.getRandomIntInclusive(50, 100) / 100;
+      newBush.position = startPoint + leftDir * (TRACK_RADIUS * dist);
+    }
+
+    if (shared.getRandomIntInclusive(0, 2) > 0)
+	  continue;
+
+    newBush = bush.clone();
+    let dist = 2 + shared.getRandomIntInclusive(50, 100) / 100;
+    newBush.position = startPoint + rightDir * (TRACK_RADIUS * dist);
+  }
+
+  bush.remove();
+}
+
+/**
  * Returns the Road path array
  */
 function generateRoad(track) {
@@ -104,6 +141,8 @@ function generateRoad(track) {
   road.strokeWidth = BORDER_WIDTH;
   road.closed = true;
   road.fillColor = TRACK_COLOR;
+
+  generateBush(track.curves);
 
   return road;
 }

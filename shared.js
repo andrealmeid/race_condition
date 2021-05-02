@@ -10,7 +10,7 @@ const KERB_COLOR = "#E50101"; // also known as "zebra"
 const TRACK_COLOR = "#8C8C8C";
 const SENSOR_LEN = 500;
 const SENSOR_WIDTH = 5;
-const SENSOR_COLOR = "lightblue";
+const SENSOR_COLOR = "#427E885A";
 
 // Car
 const CAR_SCALE = 0.05;

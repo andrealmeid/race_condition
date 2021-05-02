@@ -3,7 +3,7 @@
  * @external View
  * @external Project
  * @external Tool
- * 
+ *
  * @var {PaperScope} paper
  * @var {View} view
  * @var {Project} project
@@ -43,10 +43,6 @@ function generateTrack() {
   }
 
   track.smooth();
-
-  track.strokeColor = MIDDLE_TRACK_COLOR;
-  track.strokeWidth = MIDDLE_TRACK_WIDTH;
-  track.dashArray = [25, 17];
 
   return track;
 }
@@ -92,13 +88,16 @@ function generateRoad(track) {
   road.join(leftBorder);
   road.join(rightBorder);
 
+  // We have two border paths: the white one, and the red dashes
+  let border = road.clone();
+  border.dashArray = [KERB_GAP, KERB_GAP];
+  border.strokeColor = KERB_COLOR;
+  border.strokeWidth = BORDER_WIDTH;
+
   road.strokeColor = BORDER_COLOR;
   road.strokeWidth = BORDER_WIDTH;
   road.closed = true;
-  road.fillColor = "#ACA8AF";
-
-  // Draw the road bellow the yellow strip
-  road.sendToBack();
+  road.fillColor = TRACK_COLOR;
 
   return road;
 }

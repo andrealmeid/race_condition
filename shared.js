@@ -1,12 +1,13 @@
 // Track
-const TRACK_LENGTH = 150;
+const TRACK_LENGTH = 100;
 const TRACK_SEGMENT_SCALE = 150;
-const TRACK_CURVE_ANGLES = 20;
-const TRACK_RADIUS = 75;
-const MIDDLE_TRACK_COLOR = "#F7C856";
-const MIDDLE_TRACK_WIDTH = 5;
-const BORDER_COLOR = "black";
+const TRACK_CURVE_ANGLES = 18;
+const TRACK_RADIUS = 100;
+const BORDER_COLOR = "#FAFAFA"; // fafafafa better
 const BORDER_WIDTH = 10;
+const KERB_GAP = 25; // gap between kerb colors
+const KERB_COLOR = "#E50101"; // also known as "zebra"
+const TRACK_COLOR = "#8C8C8C";
 const SENSOR_LEN = 500;
 const SENSOR_WIDTH = 5;
 const SENSOR_COLOR = "lightblue";

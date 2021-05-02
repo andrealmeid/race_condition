@@ -21,11 +21,16 @@ let road = undefined;
 let pressedKeys = {};
 let cars = [];
 let displaySensors = false;
+let countdown = {
+  raster: new Raster('assets/3.png'),
+  number: 3
+}
 let globalStats = {
   min: Number.MAX_SAFE_INTEGER,
   max: 0,
   avg: 0,
 }
+let activeElement = document.activeElement;
 
 // UI
 let cameraFocus = {
@@ -241,7 +246,9 @@ function onFrame(event) {
     // TODO: use keyframe
     //let keyframe = shared.nextKeyframe();
 
-    shared.gameLogic(car.input, car, road, delta);
+    if (countdown.number <= 0) {
+      shared.gameLogic(car.input, car, road, delta);
+    }
 
     let intersections = shared.calculateIntersections(car, road);
 
@@ -273,9 +280,22 @@ function onFrame(event) {
     }
     car.raster.bringToFront();
 
-    // Display car speed
+    // Countdow    // Display car speed
     let displayCarSpeed = Math.round(car.speed / CAR_MAX_SPEED * CAR_DISPLAY_SPEED);
     document.getElementById('speedometer').textContent += `${car.name}: ${displayCarSpeed} km/h\r\n`;
+  }
+
+  if (countdown.number > 0) {
+    if (countdown.raster) {
+      countdown.raster.remove();
+    }
+    countdown.raster = new Raster('assets/' + Math.min(Math.floor(countdown.number)+1, 3) + '.png'),
+    countdown.raster.position = view.center;
+    countdown.raster.scale(3 * (countdown.number % 1));
+    countdown.number -= delta;
+    countdown.raster.bringToFront();
+  } else {
+      countdown.raster.remove();
   }
 
   if (cameraFocus.followCar)
@@ -323,6 +343,7 @@ driverApplyButton.onclick = function () {
   }
   ai_car.driver = driver;
   shared.restart(cars, starting_position);
+  countdown.number = 3;
 }
 
 // AIs!! Add yours' here.
@@ -330,3 +351,5 @@ shared.newCar(cars, starting_position, 'assets/car_green.png', 'praFrentex', pra
 shared.newCar(cars, starting_position, 'assets/car_underground2.png', 'danielVettel', danielVettel);
 shared.newCar(cars, starting_position, 'assets/car_orange.png', 'deadLock', deadLock);
 shared.newCar(cars, starting_position, 'assets/car_red.png', 'relampagoMarquinhos', relampagoMarquinhos);
+
+countdown.number = 3;

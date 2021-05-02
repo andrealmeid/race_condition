@@ -182,11 +182,15 @@ function onKeyDown(event) {
   if (["up", "down", "left", "right"].includes(event.key))
     player_car.input[event.key] = true;
 
-  if (event.key === "q")
+  if (event.key === "q") {
     cameraFocus.focusedCarIdx = (cameraFocus.focusedCarIdx + cars.length - 1) % cars.length;
+    cameraFocus.followCar = true;
+  }
 
-  if (event.key === "e")
+  if (event.key === "e") {
     cameraFocus.focusedCarIdx = (cameraFocus.focusedCarIdx + cars.length + 1) % cars.length;
+    cameraFocus.followCar = true;
+  }
 
   if (event.key === "1")
     displaySensors = !displaySensors;
